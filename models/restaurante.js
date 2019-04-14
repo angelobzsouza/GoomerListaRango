@@ -1,16 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Cria o esquema e o model de restaurantes
+// Schema do horario de funcionamento dos restaurantes
+const FuncionamentoSchema = new Schema ({
+	primeiroDia: String,
+	ultimoDia: String,
+	horarioAbertura: String,
+	horarioFechamento: String,	
+});
+
+// Schema dos restaurantes
 const RestauranteSchema = new Schema ({
-	nome: {
-		type: String,
-		required: [true, "O campo \"nome\" é obrigatório"]
-	},
-	endereco: {
-		type: String,
-		required: [true, "O campo \"endereco\" é obrigatório"]
-	}
+	nome: String,
+	endereco: String,
+	funcionamento: [FuncionamentoSchema],
 });
 
 const Restaurante = mongoose.model('restaurantes', RestauranteSchema);

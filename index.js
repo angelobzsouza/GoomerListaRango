@@ -15,7 +15,8 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.json());
 
 // Chama as rotas da API
-app.use('/api', require('./routes/api'));
+app.use('/api', require('./routes/restaurantes'));
+app.use('/api', require('./routes/produtos'));
 
 
 // Define a porta da API. 3000 é a porta arbitrária para o dev
