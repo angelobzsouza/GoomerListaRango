@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 // Chama as rotas da API
 app.use('/api', require('./routes/restaurantes'));
 app.use('/api', require('./routes/produtos'));
+app.use('/uploads', express.static('uploads'));
 
 
 // Define a porta da API. 3000 é a porta arbitrária para o dev

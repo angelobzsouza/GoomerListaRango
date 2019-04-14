@@ -18,6 +18,7 @@ const ProdutoSchema = new Schema ({
 	nome: String,
 	preco: Number,
 	categoria: String,
+	foto: String,
 	IDRestaurante: {type: mongoose.ObjectId, ref: 'Restaurante'},
 	promocao: PromocaoSchema,
 });

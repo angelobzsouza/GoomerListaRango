@@ -13,6 +13,7 @@ const FuncionamentoSchema = new Schema ({
 const RestauranteSchema = new Schema ({
 	nome: String,
 	endereco: String,
+	foto: String,
 	funcionamento: [FuncionamentoSchema],
 });
 
