@@ -2,6 +2,8 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
+const validacao = require('./validacoes');
+
 // Inicia as configurações de upload de imagem
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
@@ -12,27 +14,61 @@ const storage = multer.diskStorage({
 	}
 });
 const upload = multer({storage: storage});
+
 // Inicia o router
 const router = express.Router();
+
 // Models
 const Produto = require('../models/produto');
 
 // CRUD PRODUTOS
 // Busca todos os produtos de um restaurante
 router.get('/:IDRestaurante', (req, res) => {
-	Produto.findOne({IDRestaurante: req.params.IDRestaurante}).then((produtos) => {
-		res.send(produtos);
-	});
+	Produto.findOne({IDRestaurante: req.params.IDRestaurante}).
+		then((produtos) => {
+			res.status(200).send(produtos);
+		})
+		.catch((err) => {
+			res.status(404).send({Erro: "Nenhum produto foi encontrado."});
+		});
 });
 
 // Insere um novo produto
 router.post('/', upload.single("foto"),(req, res) => {
-	// Adiciona o caminho da foto do produto ao objeto para ser inserido no banco
-	req.body.foto = req.file.path;
-	// Salva o novo produto no banco
-	Produto.create(req.body).then((produto) => {
-		res.send(produto);
-	});
+	// Se houver foto, adiciona o path do arquivo ao produto
+	if (req.body.foto !== undefined) {
+		req.body.foto = req.file.path;
+	};
+
+	// Se houver promocao
+	if (req.body.promocao !== undefined) {
+		// Se os horários forem válidos
+		if (Array.isArray(req.body.promocao.diasPromocao) && validacao.validaDias(req.body.promocao.diasPromocao) && validacao.validaHorarios(req.body.promocao.diasPromocao)) {
+			Produto.create(req.body)
+				.then((restaurante) => {
+					res.status(200).send(restaurante);
+				})
+				.catch((err) => {
+					trataErros(err, res);
+				});
+		}
+		// Caso os horário não sejam válidos
+		else {
+			res.status(400).send({
+				Erro: `Horário/s de promocão inválido/s`
+			})
+		}
+	}
+	// Se não houver promocao
+	else {
+		Produto.create(req.body)
+			.then((produto) => {
+				res.status(200).send(produto);
+			})
+			.catch((err) => {
+				trataErros(err, res);
+			});
+	}
 });
 
 // Atualiza um produto
@@ -49,11 +85,42 @@ router.put('/:IDProduto', upload.single("foto"),(req, res) => {
 		// Adiciona o nome da nova foto ao documento do restaurante e atualiza
 		req.body.foto = req.file.path;
 	}
-	Produto.findByIdAndUpdate({_id: req.params.IDProduto}, req.body).then(() => {
-		Produto.findOne({_id: req.params.IDProduto}).then((produto) => {
-			res.send(produto);
-		});
-	});});
+	// Se houver promocao
+	if (req.body.promocao !== undefined) {
+		// Se os horários forem válidos
+		if (Array.isArray(req.body.promocao.diasPromocao) && validacao.validaDias(req.body.promocao.diasPromocao) && validacao.validaHorarios(req.body.promocao.diasPromocao)) {
+			Produto.findByIdAndUpdate({_id: req.params.IDProduto}, req.body)
+				.then(() => {
+					// Busca o produto atualizado
+					Produto.findOne({_id: req.params.IDProduto}).then((produto) => {
+						res.status(200).send(produto);
+					});
+				})
+				.catch((err) => {
+					trataErros(err, res);
+				});
+		// Caso os horário não sejam válidos
+		}
+		else {
+			res.status(400).send({
+				Erro: `Horário/s de promocão inválido/s`
+			})
+		}
+	}
+	// Se não houver promocao
+	else {
+		Produto.findByIdAndUpdate({_id: req.params.IDProduto}, req.body)
+			.then(() => {
+				// Busca o produto atualizado
+				Produto.findOne({_id: req.params.IDProduto}).then((produto) => {
+					res.status(200).send(produto);
+				});
+			})
+			.catch((err) => {
+				trataErros(err, res);
+			});
+	}
+});
 
 // Exclui um produto
 router.delete('/:IDProduto', (req, res) => {
@@ -66,9 +133,26 @@ router.delete('/:IDProduto', (req, res) => {
 			})
 		}
 	});
-	Produto.findByIdAndRemove({_id: req.params.IDProduto}).then((produto) => {
-		res.send(produto);
-	});
+
+	Produto.findByIdAndRemove({_id: req.params.IDProduto})
+		.then((produto) => {
+			res.status(200).send(produto);
+		})
+		.catch((err) => {
+			res.status(400).send({Erro: "Produto não encontrado"});
+		});
 });
+
+// Funções
+function trataErros (err, res) {
+	var erros = [];
+	Object.entries(err.errors).forEach(([key, value]) => {
+		erros.push({
+			Campo: key,
+			Erro: value.message,
+		})
+	});
+	res.status(400).send(erros); 
+}
 
 module.exports = router;
