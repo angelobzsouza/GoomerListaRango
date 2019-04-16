@@ -1,7 +1,7 @@
 {
   "name": "Goomer Lista Rango",
   "version": "1.0.0",
-  "description": "",
+  "description": "RESTful API para o processo seletivo da Goomer",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

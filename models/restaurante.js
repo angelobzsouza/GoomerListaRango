@@ -5,17 +5,32 @@ const Schema = mongoose.Schema;
 const FuncionamentoSchema = new Schema ({
 	primeiroDia: String,
 	ultimoDia: String,
-	horarioAbertura: String,
-	horarioFechamento: String,	
+	horarioInicio: String,
+	horarioFim: String,	
 });
 
 // Schema dos restaurantes
 const RestauranteSchema = new Schema ({
-	nome: String,
-	endereco: String,
+	nome: {
+		type: String,
+		required: [true, "O campo nome é obrigatório"]
+	},
+
+	endereco: {
+		type: String,
+		required: [true, "O enderco é obrigatório"]
+	},
+
 	foto: String,
-	funcionamento: [FuncionamentoSchema],
+
+	funcionamento: {
+		type: [FuncionamentoSchema],
+	}
 });
+
+function arrayMinlength(array) {
+	return array.length > 0;
+}
 
 const Restaurante = mongoose.model('restaurantes', RestauranteSchema);
 
