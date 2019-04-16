@@ -10,4 +10,4 @@ Maneiras de melhorar a aplicação
 		- Tratamento de imagens, criando miniaturas para servir ao usuário, definindo formatos, tamanhos e dimensões.
 
 Instruções para rodar a aplicação
-	As instruções para rodar a aplicação se encontram na documentação da API que se encontra no mesmo respositório deste arquivo.
+	As instruções para rodar a aplicação se encontram na documentação da API que se encontra no mesmo respositório deste arquivo. Para testa-la, é possível utilizar o software opensource Postman.

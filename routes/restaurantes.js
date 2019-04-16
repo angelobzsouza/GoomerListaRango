@@ -106,8 +106,27 @@ router.put('/:IDRestaurante', upload.single("foto"), (req, res, next) => {
 		req.body.foto = req.file.path;
 	}
 
-	// Valida as entradas
-	if (validacao.validaDias(req.body.funcionamento) && validacao.validaHorarios(req.body.funcionamento)) {
+	// Valida os horários
+	if (Array.isArray(req.body.funcionamento)) {
+		if (validacao.validaDias(req.body.funcionamento) && validacao.validaHorarios(req.body.funcionamento)) {
+			Restaurante.findByIdAndUpdate({_id: req.params.IDRestaurante}, req.body)
+				// Em caso de sucesso retorna busca o restaurante atualizado e retorna
+				.then(() => {
+					Restaurante.findOne({_id: req.params.IDRestaurante}).then((restaurante) => {
+						res.send(restaurante);
+					});
+				})
+				// Caso o contrário, cria um vetor de erros e envia
+				.catch((err) => {
+					res.status(404).send({Erro: "Restaurante não encontrado"});
+				});
+		}
+		else {
+			res.status(400).send({Erro: `Horario de funcionamento inválido`});
+		}
+	}
+	// Se não houver um novo horário, atualiza
+	else {
 		Restaurante.findByIdAndUpdate({_id: req.params.IDRestaurante}, req.body)
 			// Em caso de sucesso retorna busca o restaurante atualizado e retorna
 			.then(() => {
@@ -119,9 +138,6 @@ router.put('/:IDRestaurante', upload.single("foto"), (req, res, next) => {
 			.catch((err) => {
 				res.status(404).send({Erro: "Restaurante não encontrado"});
 			});
-	}
-	else {
-		res.status(400).send({Erro: `Horario de funcionamento inválido`});
 	}
 });
 

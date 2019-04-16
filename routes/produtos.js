@@ -24,7 +24,7 @@ const Produto = require('../models/produto');
 // CRUD PRODUTOS
 // Busca todos os produtos de um restaurante
 router.get('/:IDRestaurante', (req, res) => {
-	Produto.findOne({IDRestaurante: req.params.IDRestaurante}).
+	Produto.find({IDRestaurante: req.params.IDRestaurante}).
 		then((produtos) => {
 			res.status(200).send(produtos);
 		})
@@ -124,15 +124,19 @@ router.put('/:IDProduto', upload.single("foto"),(req, res) => {
 
 // Exclui um produto
 router.delete('/:IDProduto', (req, res) => {
-	Produto.findOne({_id: req.params.IDProduto}).then((produto) => {
-		// Se o produto tiver uma foto salva no server, exclui o arquivo antes de apagar o produto
-		if (produto.foto !== undefined) {
-			// Se houver algum erro ao excluir o arquivo, apresenta o mesmo no console
-			fs.unlink(produto.foto, (err) => {
-				if (err) console.log(err);
-			})
-		}
-	});
+	Produto.findOne({_id: req.params.IDProduto})
+		.then((produto) => {
+			// Se o produto tiver uma foto salva no server, exclui o arquivo antes de apagar o produto
+			if (produto.foto !== undefined) {
+				// Se houver algum erro ao excluir o arquivo, apresenta o mesmo no console
+				fs.unlink(produto.foto, (err) => {
+					if (err) console.log(err);
+				})
+			}
+		})
+		.catch((er) => {
+			res.status(400).send({Erro: "Produto não encontrado"});
+		});
 
 	Produto.findByIdAndRemove({_id: req.params.IDProduto})
 		.then((produto) => {
