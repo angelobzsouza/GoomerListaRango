@@ -1,6 +1,7 @@
 {
   "name": "goomer-lista-rango",
   "version": "1.0.0",
+  "private": true,
   "description": "RESTful API para o processo seletivo da Goomer",
   "main": "index.js",
   "scripts": {
