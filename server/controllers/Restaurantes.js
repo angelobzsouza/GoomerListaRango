@@ -1,10 +1,12 @@
 // Modules
-const express = require('express');
-const multer = require('multer');
 const fs = require('fs')
-const validacao = require('./validacoes');
+const validacao = require('../validation/validacoes');
+const multer = require('multer');
 
-// Inicia configurações para uploads de imagens
+// Models
+const Restaurante = require('../models/restaurante');
+
+// Inicializações
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
 		callback(null, './uploads/');
@@ -15,20 +17,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-// Inicia o router
-const router = express.Router();
-
-// Models
-const Restaurante = require('../models/restaurante');
-
-// CRUD RESTAURANTES
-// Busca todos os restaurantes
-router.get('/', (req, res, next) => {
-	Restaurante.find().then((restaurantes) => {
+//CRUD
+const getRestaurants = (req, res) => {
+  Restaurante.find().then((restaurantes) => {
 		// Verifica se foi encontrado ao menos um restaurante
 		if (restaurantes.length !== 0) {
 			res.status(200)
-				 .send(restaurantes);
+				.send(restaurantes);
 		}
 		else {
 			res.status(404)
@@ -37,10 +32,9 @@ router.get('/', (req, res, next) => {
 				 });
 		}
 	});
-});
+};
 
-// Busca um restaurante pelo ID
-router.get('/:IDRestaurante', (req, res, next) => {
+const getRestaurant = (req, res) => {
 	Restaurante.findOne({_id: req.params.IDRestaurante})
 		// Em caso de sucesso retorna o restaurante 
 		.then((restaurante) => {
@@ -48,23 +42,27 @@ router.get('/:IDRestaurante', (req, res, next) => {
 				 .send(restaurante);
 		})
 		// Em caso de erro, retorna o erro
-		.catch((error) => {
+		.catch(() => {
 			res.status(404)
 				 .send({
 						Erro: 'Restaurante não encontrado.'
 				 });
 		});
-});
+};
 
-// Insere um novo restaurante
-router.post('/', upload.single("foto"),(req, res, next) => {
+const createRestaurant = (req, res) => {
+	//Upload da foto
+	upload.single("foto")
 	// Se houver foto, adiciona o path do arquivo ao restaurante
-	if (req.body.foto !== undefined) {
+	if (req.body.foto) {
 		req.body.foto = req.file.path;
 	};
 
 	// Valida as entradas de horário
-	if (Array.isArray(req.body.funcionamento) && validacao.validaDias(req.body.funcionamento) && validacao.validaHorarios(req.body.funcionamento)) {
+	if (req.body.funcionamento != null &&
+		Array.isArray(req.body.funcionamento) &&
+		validacao.validaDias(req.body.funcionamento) &&
+		validacao.validaHorarios(req.body.funcionamento)) {
 		// Salva o novo restaurante
 		Restaurante.create(req.body)
 			// Em caso de sucesso retorna o restaurante
@@ -89,10 +87,11 @@ router.post('/', upload.single("foto"),(req, res, next) => {
 			Erro: `Horario de funcionamento inválido`
 		})
 	}
-});
+};
 
-// Atualiza um restaurante
-router.put('/:IDRestaurante', upload.single("foto"), (req, res, next) => {
+const updateRestaurant = (req, res) => {
+	//Upload da foto
+	upload.single("foto");
 	// Se alguma foto estiver sendo enviada, busca o restaurante para apagar o arquivo antigo
 	if (req.file !== undefined) {
 		Restaurante.findOne({_id: req.params.IDRestaurante}).then((restaurante) => {
@@ -139,10 +138,9 @@ router.put('/:IDRestaurante', upload.single("foto"), (req, res, next) => {
 				res.status(404).send({Erro: "Restaurante não encontrado"});
 			});
 	}
-});
+}
 
-// Exclui um restaurante
-router.delete('/:IDRestaurante', (req, res, next) => {
+const deleteRestaurant = (req, res) => {
 	Restaurante.findOne({_id: req.params.IDRestaurante}).then((restaurante) => {
 		// Se o restaurante tiver uma foto salva no server, exclui o arquivo antes de apagar o restaurante
 		if (restaurante.foto !== undefined) {
@@ -159,6 +157,6 @@ router.delete('/:IDRestaurante', (req, res, next) => {
 		.catch((err) => {
 			res.status(404).send({Erro: "Restaurante não encontrado"});
 		});
-});
+}
 
-module.exports = router;
+module.exports = { getRestaurants, getRestaurant, createRestaurant, updateRestaurant, deleteRestaurant };

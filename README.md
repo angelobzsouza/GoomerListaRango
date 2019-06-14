@@ -79,6 +79,7 @@ Essa rota não recebe nenhum parâmtro
 
     GET /api/restaurantes/{IDRestaurante}
 Busca um determinado restaurante no sistema.
+
 ### Parâmtros:
 Parametro recebido por GET
 | Nome | Tipo | Obrigatório | Descricao |
@@ -134,6 +135,7 @@ Parametro recebido por GET
 
     POST /api/restaurantes
 Insere um novo restaurante no banco.
+
 ### Parâmtros:
 
 | Nome | Tipo | Obrigatório | Descricao |
@@ -217,7 +219,9 @@ Retorna o restaurante inserido
 
     PUT /api/restaurantes/{IDRestaurante}
 Atualiza as informações de um determinado restaurante.
+
 ### Parâmtros:
+
 Os parametros que não são enviados, são mantidos com o valor inserido anteriormente.
 | Nome | Tipo | Obrigatório | Descricao |
 | ------ | ------ | ------ | ------ |
@@ -299,6 +303,7 @@ Retorna o restaurante atualizado
 
     DELETE /api/restaurantes/{IDRestaurante}
 Exclui um restaurante do sistema
+
 ### Parâmtros:
 
 | Nome | Tipo | Obrigatório | Descricao |
@@ -355,7 +360,9 @@ Retorna o restaurante removido
 
     GET /api/produtos/{IDRestaurante}
 Busca toodos os produtos de um determinado restaurante
+
 ### Parâmtros:
+
 Parametro recebido por GET
 | Nome | Tipo | Obrigatório | Descricao |
 | ------ | ------ | ------ | ------ |
@@ -428,6 +435,7 @@ Parametro recebido por GET
 
     POST /api/produtos
 Insere um novo produto no banco
+
 ### Parâmtros:
 
 | Nome | Tipo | Obrigatório | Descricao |
@@ -528,6 +536,7 @@ Retorna o produto inserido
 
     PUT /api/produtos/{IDProduto}
 Atualiza um determinado produto no banco.
+
 ### Parâmtros:
 
 | Nome | Tipo | Obrigatório | Descricao |
@@ -557,6 +566,7 @@ Atualiza um determinado produto no banco.
 | horarioFim | String | Sim | Horário de inicio da promocao no intervalo para os dias inseridos
 
 ### Retorno:
+
 Retorna o produto atualizado
 ```javascript
 {
@@ -634,7 +644,9 @@ Retorna o produto atualizado
 
     DELETE /api/produtos/{IDProduto}
 Exclui um determinado produto do banco
+
 ### Parâmtros:
+
 | Nome | Tipo | Obrigatório | Descricao |
 | ------ | ------ | ------ | ------ |
 | IDProduto | String | Sim | Id do produto que está sendo excluido

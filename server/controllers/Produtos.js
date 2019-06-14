@@ -1,8 +1,10 @@
 // Modules
-const express = require('express');
+const fs = require('fs')
+const validacao = require('../validation/validacoes');
 const multer = require('multer');
-const fs = require('fs');
-const validacao = require('./validacoes');
+
+// Models
+const Produto = require('../models/produto');
 
 // Inicia as configurações de upload de imagem
 const storage = multer.diskStorage({
@@ -15,15 +17,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-// Inicia o router
-const router = express.Router();
-
-// Models
-const Produto = require('../models/produto');
-
-// CRUD PRODUTOS
-// Busca todos os produtos de um restaurante
-router.get('/:IDRestaurante', (req, res) => {
+//CRUD
+const getProduct = (req, res) => {
 	Produto.find({IDRestaurante: req.params.IDRestaurante}).
 		then((produtos) => {
 			res.status(200).send(produtos);
@@ -31,10 +26,10 @@ router.get('/:IDRestaurante', (req, res) => {
 		.catch((err) => {
 			res.status(404).send({Erro: "Nenhum produto foi encontrado."});
 		});
-});
+};
 
-// Insere um novo produto
-router.post('/', upload.single("foto"),(req, res) => {
+const createProduct = (req, res) => {
+  upload.single("foto");
 	// Se houver foto, adiciona o path do arquivo ao produto
 	if (req.body.foto !== undefined) {
 		req.body.foto = req.file.path;
@@ -69,10 +64,10 @@ router.post('/', upload.single("foto"),(req, res) => {
 				trataErros(err, res);
 			});
 	}
-});
+};
 
-// Atualiza um produto
-router.put('/:IDProduto', upload.single("foto"),(req, res) => {
+const updateProduct = (req, res) => {
+  upload.single("foto")
 	// Se alguma foto estiver sendo enviada, busca o produto para apagar o arquivo antigo
 	if (req.file !== undefined) {
 		Produto.findOne({_id: req.params.IDProduto}).then((produto) => {
@@ -120,10 +115,9 @@ router.put('/:IDProduto', upload.single("foto"),(req, res) => {
 				trataErros(err, res);
 			});
 	}
-});
+};
 
-// Exclui um produto
-router.delete('/:IDProduto', (req, res) => {
+const deleteProduct = (req, res) => {
 	Produto.findOne({_id: req.params.IDProduto})
 		.then((produto) => {
 			// Se o produto tiver uma foto salva no server, exclui o arquivo antes de apagar o produto
@@ -145,7 +139,7 @@ router.delete('/:IDProduto', (req, res) => {
 		.catch((err) => {
 			res.status(400).send({Erro: "Produto não encontrado"});
 		});
-});
+};
 
 // Funções
 function trataErros (err, res) {
@@ -159,4 +153,4 @@ function trataErros (err, res) {
 	res.status(400).send(erros); 
 }
 
-module.exports = router;
+module.exports = { getProduct, createProduct, updateProduct, deleteProduct };

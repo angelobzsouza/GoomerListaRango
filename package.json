@@ -5,7 +5,9 @@
   "description": "RESTful API para o processo seletivo da Goomer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "start": "node index.js",
+    "start:dev": "nodemon -w server index.js"
   },
   "keywords": [],
   "author": "Angelo Bezerra de Souza",
@@ -15,5 +17,10 @@
     "express": "^4.16.4",
     "mongoose": "^5.5.1",
     "multer": "^1.4.1"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
+    "supertest": "^4.0.2"
   }
 }
